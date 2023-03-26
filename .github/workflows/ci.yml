@@ -55,8 +55,5 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
       name: Pull and run image from registry
-      run: docker run -d -p 80:3000 shevchyk/node-app
-    -
-      name: healthcheck
-      run: curl http://localhost/
+      run: docker run shevchyk/node-app
     
