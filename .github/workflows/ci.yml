@@ -55,5 +55,5 @@ jobs:
       run: |
         status=$(curl --write-out '%{http_code}' http://localhost)
         echo "HTTP Status Code: $status"
-      if: ${{ ne(steps.healthcheck.output.status, '200')}}
+      if: steps.healthcheck.output.status != '200'
     
