@@ -55,5 +55,11 @@ jobs:
         password: ${{ secrets.DOCKERHUB_TOKEN }}
     -
       name: Pull and run image from registry
-      run: docker run shevchyk/node-app
+      run: docker run -d --name node-app -p 3000:3000 shevchyk/node-app
+    -
+      name: healthcheck
+      run: |
+        docker exec -it node-app
+        status=$(curl --write-out '%{http_code}' --silent --output /dev/null http://localhost:3000/)
+        echo "HTTP Status Code: $status"
     
