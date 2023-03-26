@@ -1,7 +1,4 @@
-# This workflow will do a clean installation of node dependencies, cache/restore them, build the source code and run tests across different versions of node
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-nodejs
-
-name: Node.js CI
+name: kma-devops
 
 on:
   push:
@@ -24,6 +21,14 @@ jobs:
         cache: 'npm'
     - run: npm ci
     - run: npm run lint
+
+  deploy:
+
+    needs: [build]
+    runs-on: ubuntu-latest
+
+
+    steps:
     -
       name: Login to Docker Hub
       uses: docker/login-action@v2
@@ -36,4 +41,19 @@ jobs:
       with:
         push: true
         tags: shevchyk/node-app:latest
-      
+  
+  validate:
+
+    needs: [deploy]
+    runs-on: ubuntu-latest
+    steps:
+    -
+      name: Pull and run image from registry
+      run: docker run -d -p 80:3000 shevchyk/node-app
+    -
+      name: healthcheck
+      run: |
+        status=$(curl --write-out '%{http_code}' http://localhost)
+        echo "HTTP Status Code: $status"
+      if: ${{ ne(steps.healthcheck.output.status, '200')}}
+    
